@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="../BenchMarkPractice/BenchMarkPractice.csproj" Id="39805904-0b39-49db-9504-fe95d8e621ec" />
-  <Project Path="../ParallelProcessing_NET8/ParallelProcessing_NET8.csproj" Id="94b3de45-2c2f-46ad-9d76-b8c604903988" />
-  <Project Path="E:/csharp_course/ParallelProcessing/ParallelProcessing.csproj" Id="ee738ca0-c397-408a-8671-3c9695a8108f" />
+  <Project Path="CSV/CSV.csproj" Id="0147bd60-04da-4871-b007-d8ec8bafcc0d" />
+  <Project Path="ParallelProcessing.csproj" Id="ee738ca0-c397-408a-8671-3c9695a8108f" />
 </Solution>

@@ -161,3 +161,23 @@
 250w 29.1915 | 17.6625 | 49.229 |
 300w 26.3835 | 19.0595 | 48.927 |
 350w 30.976 | 23.42 | 58.788 |
+
+## 如何執行
+
+1. 準備測試資料：檔名格式為 `MOCK_DATA_{筆數}.csv`（例如 `MOCK_DATA_15000000.csv`），筆數需與 `Program.cs` 中的 `count` 相同。
+2. 第一列為標題列，欄位依 `DataModel.cs` 為：
+
+   ```
+   id,first_name,last_name,email,gender,ip_address
+   1,Alexia,Wem,awem0@stanford.edu,Female,193.114.142.200
+   ```
+
+3. 預設將資料檔放在執行檔旁的 `data` 資料夾（Debug 建置為 `bin\Debug\data\`），結果會輸出到執行檔旁的 `outputData\{筆數}\`。
+4. 若要改路徑，修改 `App.config`（建置後為執行檔旁的 `ParallelProcessing.exe.config`）的 `appSettings`，相對路徑以執行檔所在資料夾為基準，也可填絕對路徑：
+
+   ```xml
+   <appSettings>
+       <add key="InputFolder" value="data"/>
+       <add key="OutputFolder" value="outputData"/>
+   </appSettings>
+   ```

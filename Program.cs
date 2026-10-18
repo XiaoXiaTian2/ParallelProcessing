@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -20,8 +21,9 @@ namespace ParallelProcessing
             //HW winform專案 建置完(debug) 防止雙開app => mutex實現
             int count = 15_000_000;
             int batchSize = 1_000_000;
-            string inputPath = $"E:/csharp_course/data/MOCK_DATA_{count}.csv";
-            string outputDir = "E:/csharp_course/outputData";
+            string inputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["InputFolder"] ?? "data");
+            string inputPath = $"{inputDir}/MOCK_DATA_{count}.csv";
+            string outputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["OutputFolder"] ?? "outputData");
 
             // 計算分批
             int batchCount = (int)Math.Ceiling((double)count / batchSize);
