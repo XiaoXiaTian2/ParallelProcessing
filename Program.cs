@@ -1,17 +1,19 @@
-﻿using System;
+﻿using CSV;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using CSV;
 
 namespace ParallelProcessing
 {
     internal class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             object a = new object();
 
@@ -33,33 +35,28 @@ namespace ParallelProcessing
 
             Stopwatch totalStopwatch = Stopwatch.StartNew();
 
-            List<Task> tasks = new List<Task>();
-            for (int i = 0; i < batchCount; i++)
+            // 每批處理，同時最多 6 批
+            Parallel.For(0, batchCount, new ParallelOptions() { MaxDegreeOfParallelism = 6 }, batchNumber =>
             {
-                int batchNumber = i;
+                //string outputPath = $"{outputDir}/{count}/MOCK_DATA_{count}_{batchNumber + 1}.csv";
+                string outputPath = $"{outputDir}/{count}/MOCK_DATA_{count}.csv";
 
-                // 每批處理
-                Task task = Task.Run(() =>
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                List<DataModel> batch = CSVHelper.Read<DataModel>(inputPath, batchNumber * batchSize, batchSize);
+                readTimes[batchNumber] = stopwatch.ElapsedMilliseconds / 1000.0;
+
+                stopwatch.Restart();
+                //Mutex appMutex = new Mutex(false, "MutexPractice");
+                //appMutex.WaitOne();
+                //appMutex.ReleaseMutex();
+
+                lock (a)
                 {
-                    //string outputPath = $"{outputDir}/{count}/MOCK_DATA_{count}_{batchNumber + 1}.csv";
-                    string outputPath = $"{outputDir}/{count}/MOCK_DATA_{count}.csv";
+                    CSVHelper.WriteList(outputPath, batch);
+                }
+                writeTimes[batchNumber] = stopwatch.ElapsedMilliseconds / 1000.0;
+            }); // Parallel.For 會等全部的批次都做完才往下
 
-                    Stopwatch stopwatch = Stopwatch.StartNew();
-                    List<DataModel> batch = CSVHelper.Read<DataModel>(inputPath, batchNumber * batchSize, batchSize);
-                    readTimes[batchNumber] = stopwatch.ElapsedMilliseconds / 1000.0;
-
-                    stopwatch.Restart();
-                    lock (a)
-                    {
-                        CSVHelper.WriteList(outputPath, batch);
-                    }
-                    writeTimes[batchNumber] = stopwatch.ElapsedMilliseconds / 1000.0;
-                });
-
-                tasks.Add(task);
-            }
-
-            await Task.WhenAll(tasks); // 等全部的批次都做完
             totalStopwatch.Stop();
 
             double readTimeMedium = readTimes.Medium(x => x);
