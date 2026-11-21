@@ -19,7 +19,7 @@ namespace ParallelProcessing
             object a = new object();
 
             //HW winform專案 建置完(debug) 防止雙開app => mutex實現
-            int count = 15_000_000;
+            int count = 40_000_000;
             int batchSize = 1_000_000;
             string inputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ConfigurationManager.AppSettings["InputFolder"] ?? "data");
             string inputPath = $"{inputDir}/MOCK_DATA_{count}.csv";
@@ -44,7 +44,7 @@ namespace ParallelProcessing
                 string outputPath = $"{outputDir}/{count}/MOCK_DATA_{count}.csv";
 
                 Stopwatch stopwatch = Stopwatch.StartNew();
-                List<DataModel> batch = CSVHelper.Read<DataModel>(inputPath, batchNumber * batchSize, batchSize);
+                List<DataModel> batch = CSVHelper.OptimizeRead<DataModel>(inputPath, batchNumber * batchSize, batchSize);
                 readTimes[batchNumber] = stopwatch.ElapsedMilliseconds / 1000.0;
 
                 stopwatch.Restart();
@@ -54,7 +54,7 @@ namespace ParallelProcessing
 
                 lock (a)
                 {
-                    CSVHelper.WriteList(outputPath, batch);
+                    CSVHelper.OptimizeWrite(outputPath, batch);
                 }
                 writeTimes[batchNumber] = stopwatch.ElapsedMilliseconds / 1000.0;
             }); // Parallel.For 會等全部的批次都做完才往下
